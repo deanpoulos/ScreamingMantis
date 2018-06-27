@@ -1,2 +1,3 @@
 # ScreamingMantis
-![running](https://user-images.githubusercontent.com/38335668/41724264-8617eada-75b0-11e8-8a47-4fcc5dfd3a13.jpg)
+![1](https://user-images.githubusercontent.com/38335668/41955713-7f7b1d96-7a24-11e8-8a50-6076d7f878b9.jpg)
+
