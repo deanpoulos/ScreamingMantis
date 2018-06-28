@@ -2,19 +2,19 @@
 # x add difference between closing prices on primitive example
 # x add two more exchanges: Bitfinex & BTC Markets                             
 # / add buy/sell order price comparison                                       
-# - implement dynamic exchange information fetching for BTCMarkets & Bitfinex
-# - implement price comparisons between BTCMarkets & Bitfinex
+# x implement dynamic exchange information fetching for BTCMarkets & Bitfinex
+# x implement price comparisons between BTCMarkets & Bitfinex
 
 # library headers ============================================================#
 
 import keys             # abstract away our keys so we improve security
+import requests         # so we can contact BTCMarkets API directly
 import datetime;        import time                 # for system clock time
 from formatting         import *                    # abstract away esc seqs
 from binance.client     import Client     as bin    # from python-binance pip
 from kucoin.client      import Client     as kuc    # from python-kucoin pip
 from btcmarkets.api     import BTCMarkets as btc    # from BTCMarkets github
 from bitfinex.client    import Client     as bit    # from bitfinex pip
-from time               import sleep                # to loop program update 1m
 
 # KuCoin & Binance ===========================================================#
 
@@ -78,7 +78,7 @@ def printTickInfoKuCoinBinance(exchanges):
             CLR, exchange["pair"], exchange["status"]))
 
         # print closing prices over interval
-        print("{0} - Closing Prices: {1}".format(WHT, CLR))
+        print("{0} • Closing Prices: {1}".format(WHT, CLR))
         for dict in exchange["closingPrices"]:
             # iterate over dicts like a list
             dict = sum(dict.items(), ())
@@ -122,21 +122,98 @@ def closingDifferenceKuCoinBinance(exchanges):
 
 def initialiseBTCMarketsBitfinex(exchanges):
     """
-        initialises the dynamic data for exchanges Binance and KuCoin such as
-        price action and trading status
+        initialises the dynamic data for exchanges BTCMarkets and Bitfinex 
+        such as price action and trading status
     """
 
     for exchange in exchanges:
 
         if exchange == exchanges[BITFINEX]:
-            # get price
-            print(exchange["client"].ticker(exchange["pair"]))
-            print(exchange["client"].today(exchange["pair"]))
-            print(exchange["client"].stats(exchange["pair"]))
-            exchange["price"] = exchange["client"].ticker(exchange["pair"])[2]
+            # get medium for bid price
+            exchange["price"] = \
+            exchange["client"].ticker(exchange["pair"])
+            # get status
+            exchange["status"] = int(exchange["price"] == {})     * INACTIVE + \
+                                 int(not exchange["price"] == {}) * ACTIVE 
 
         elif exchange == exchanges[BTCMARKETS]:
+            # get medium for ask price
+            url = exchange["client"].base_url + "/market/" + \
+                  exchange["pair"] + "/tick"
 
-            print("placeholder reached")
+            exchange["price"] = requests.get(url, verify=True).json()
 
+            # get status
+            exchange["status"] = int(exchange["price"] == {})     * INACTIVE + \
+                                 int(not exchange["price"] == {}) * ACTIVE 
+            
     return(exchanges)
+
+
+
+def printTickInfoBTCMarketsBitfinex(exchanges):
+    """
+        print most recent price information for BTCMarkets & Binance
+    """
+
+    for exchange in exchanges:
+        # print name, exchange and status
+        print("{0}Trading Pair: {1} {2}{3} {4}".format(WHT, exchange["name"], 
+            CLR, exchange["pair"], exchange["status"]))
+
+        # convert timestamp to readable string
+        exchange["price"]["timestamp"] = datetime.datetime.fromtimestamp(
+                exchange["price"]["timestamp"]).strftime("%H:%M:%S")
+
+        # print bid price compared with asking price
+        if exchange == exchanges[BITFINEX]:
+            print("{0} • Bid Price:  {1}".format(WHT, CLR), end = '')
+            print("{0}{1:.6f} {2}{3}".format(
+                                             CLR, exchange["price"]["bid"],
+                                             RED, exchange["price"]["timestamp"]))
+            print("{0} • Last Price: {1}".format(WHT, CLR), end = '')
+            print("{0}{1:.6f} {2}{3}".format(
+                                             CLR, exchange["price"]["last_price"],
+                                             RED, exchange["price"]["timestamp"]))
+            
+        if exchange == exchanges[BTCMARKETS]:
+            print("{0} • Ask Price:  {1}".format(WHT, CLR), end = '')
+            print("{0}{1:.6f} {2}{3}".format(
+                                             CLR, exchange["price"]["bestAsk"],
+                                             RED, exchange["price"]["timestamp"]))
+            print("{0} • Last Price: {1}".format(WHT, CLR), end = '')
+            print("{0}{1:.6f} {2}{3}".format(
+                                             CLR, exchange["price"]["lastPrice"],
+                                             RED, exchange["price"]["timestamp"]))
+
+
+
+def profitabilityBTCMarketsBitfinex(exchanges):
+    """
+        uses a formula to determine the profitability of a trade
+    """
+
+    # relative file name
+    filename = 'logs/' + time.strftime("%Y-%m-%d") + '.txt'
+    print("{0}Printing data to {1}{2}{3}:".format(WHT, YEL + UND, filename, CLR))
+
+    # loop until we terminate the program to keep data up to date
+    while 1:
+
+        # calculate percentage 'p' with fees
+        import random               # remove once replaced with proper math
+        p = random.random()*14 + 94 # placeholder for lyndon's magic
+
+        # open file 'f' for appending lines
+        with open(filename, 'a+') as f:
+
+            # initialise line as 'Sat Jul 7 10:00:00 2000  102.53%'
+            l = time.strftime("%c", time.localtime()) 
+            l += GRN * int(p > 100) + RED * int(p < 100) 
+            l += " {0:.2f}%\n".format(p) + CLR
+
+            # print to screen & write to file
+            print(CLR + " • " + l, end = '');   f.write(l)
+
+        # wait until data has changed
+        time.sleep(3)
