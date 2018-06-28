@@ -13,5 +13,5 @@ Bash script for viewing escaped log files, used with `./readLog logs/2000-07-07.
 ### keys.py
 Contains various API keys as attributes and is provided as a skeleton since API keys should never be shared
 ## Screenshots
-![1](https://user-images.githubusercontent.com/38335668/42029214-268ec572-7b12-11e8-98c1-e28bc15c02f0.jpg)
+![1](/images/1.jpg)
 
