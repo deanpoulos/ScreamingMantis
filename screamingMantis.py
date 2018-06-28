@@ -20,10 +20,10 @@ kucoin     =    { 'client':   kuc(keys.APIKey, keys.SecretKey),
                     'pair':   "NEO-ETH"                          }
 btcmarkets =    { 'client':   btc(keys.APIKey, keys.SecretKey),
                     'name':   LIM + "[BTC Markets]" + CLR,
-                    'pair':   "xrpeth"                           } 
+                    'pair':   "ETH/BTC"                          } 
 bitfinex   =    { 'client':   bit(),
                     'name':   TEL + "[Bitfinex]" + CLR,
-                    'pair':   "btcusd"                           }
+                    'pair':   "ethbtc"                           }
 
 exchanges  =    [binance, kucoin, btcmarkets, bitfinex]
 
@@ -36,7 +36,7 @@ print((EXCHANGES + " ".join([exchange["name"] for exchange in exchanges])+'\n'))
 print("") # print new line implicitly
 
 choice      = input(("Select exchange combination:\n\n   1) {0} & {1}" + \
-                     "\n   2) {2} & {3}\n\n(1/2)?: ").format(kucoin["name"],
+                     "\n   2) {2} & {3}\n\n(1/2): ").format(kucoin["name"],
                         binance["name"], btcmarkets["name"], bitfinex["name"]))
 
 print("") # print new line implicitly
@@ -59,6 +59,9 @@ elif choice == "2":
     # initialise exchange information
     exchanges = [btcmarkets, bitfinex]
     exchanges = initialiseBTCMarketsBitfinex(exchanges)
-
+    # print contextual information
+    printTickInfoBTCMarketsBitfinex(exchanges); print("")
+    # calculate profitablity and print to file
+    profitabilityBTCMarketsBitfinex(exchanges); print("")
 else:
     exit()
