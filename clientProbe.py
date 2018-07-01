@@ -194,7 +194,7 @@ def profitabilityBTCMarketsBitfinex(exchanges):
     """
 
     # relative file name
-    filename = 'logs/' + time.strftime("%Y-%m-%d") + '.txt'
+    filename = 'logs/' + time.strftime("%Y-%m-%d")
     print("{0}Printing data to {1}{2}{3}:".format(WHT, YEL + UND, filename, CLR))
 
     # loop until we terminate the program to keep data up to date
