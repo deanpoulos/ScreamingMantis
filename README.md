@@ -11,6 +11,15 @@ use `pip show -f <name>`
 ## Content
 Interacts with cryptocurrency exchange APIs and fetches dynamic price information for various comparisons
 
+## Agenda 
+- [x] add difference between closing prices for binance/kucoin
+- [x] add bitfinex & btcmarkets
+- [x] implement dynamic information fetching for btcmarkets & bitfinex
+- [x] implement file writing and log file management
+- [ ] add price comparison with fees
+- [ ] add inter-exchange trading
+- [ ] add buy and sell order handling
+
 ## Files
 ### screamingMantis.py
 The interface for accessing modules of `clientProbe.py`. This program is the one to be run with `python3`
