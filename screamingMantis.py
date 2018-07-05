@@ -20,7 +20,7 @@ kucoin     =    { 'client':   kuc(keys.APIKey, keys.SecretKey),
                     'pair':   "XRP-ETH"                          }
 btcmarkets =    { 'client':   btc(keys.APIKey, keys.SecretKey),
                     'name':   LIM + "[BTC Markets]" + CLR,
-                    'pair':   "XRP/AUD"                          } 
+                    'pair':   "XRP/AUD"                          }
 bitfinex   =    { 'client':   bit(),
                     'name':   TEL + "[Bitfinex]" + CLR,
                     'pair':   "xrpeth"                           }
@@ -70,6 +70,8 @@ elif choice == "3":
     exchanges = initialiseBTCMarketsBinance(exchanges)
     # print contextual information
     printTickInfoBTCMarketsBinance(exchanges)
+    # determine whether profitable
+    profitabilityBTCMarketsBinance(exchanges)
 
 else:
     exit()

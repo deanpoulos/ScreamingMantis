@@ -273,7 +273,7 @@ def printTickInfoBTCMarketsBinance(exchanges):
 
         # print bid price compared with asking price
         if exchange == exchanges[BINANCE]:
-            print("{0} • Ask Price:  {1}".format(WHT, CLR), end = '')
+            print("{0} • Bid Price:  {1}".format(WHT, CLR), end = '')
             print("{0}{1} {2}{3}".format(
                                              CLR, exchange["price"]["bids"][0][0],
                                              RED, exchange["price"]["timestamp"]))
@@ -284,3 +284,54 @@ def printTickInfoBTCMarketsBinance(exchanges):
                                              CLR,
                                              exchange["price"]["asks"][0][0],
                                              RED, exchange["price"]["timestamp"]))
+
+
+
+def profitabilityBTCMarketsBinance(exchanges):
+    """
+        uses a formula to determine the profitability of a trade
+    """
+
+    # some constants for price comparison
+    initial = float(input("Enter initial amount: "))
+
+    BTCmarketsTradingFee = 0.9915
+    BinanceTradingFee = 0.999
+    XRPTransferFee = 0.15
+    ETHTransferFee = 0.01
+
+    # relative file name
+    filename = 'logs/' + time.strftime("%Y-%m-%d")
+    print("{0}Printing data to {1}{2}{3}:".format(WHT, YEL + UND, filename, CLR))
+
+    # loop until we terminate the program to keep data up to date
+    while 1:
+
+        # reinitialise info to keep it current
+        exchanges = initialiseBTCMarketsBinance(exchanges)
+        XRPprice = float(exchanges[BTCMARKETS]["price"]["asks"][0][0])
+        XRPETHprice = float(exchanges[BINANCE]["price"]["bids"][0][0]) 
+        ETHprice = float(requests.get("https://api.btcmarkets.net/market/ETH/AUD/orderbook", 
+                                      verify=True).json()["bids"][0][0])
+
+        # calculate percentage 'p' with fees
+        AmountXRP = ((initial*BTCmarketsTradingFee)/XRPprice)-XRPTransferFee
+        EthAmount = (AmountXRP*XRPETHprice*BinanceTradingFee)-ETHTransferFee
+        final = EthAmount*ETHprice*BTCmarketsTradingFee
+
+        p = (final/initial)*100
+
+        # open file 'f' for appending lines
+        with open(filename, 'a+') as f:
+
+            # initialise line as 'Sat Jul 7 10:00:00 2000  102.53%'
+            l = time.strftime("%c", time.localtime()) 
+            l += GRN * int(p > 100) + RED * int(p < 100) 
+            l += " {0:.2f}%\n".format(p) + CLR
+
+            # print to screen & write to file
+            print(CLR + " • " + l, end = '');   f.write(l)
+
+        # wait until data has changed
+        time.sleep(30)
+ 

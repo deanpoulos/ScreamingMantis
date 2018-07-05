@@ -16,6 +16,9 @@ BINANCE     =   1
 BTCMARKETS  =   2 % 2
 BITFINEX    =   3 % 2
 
+START       =   0
+FINISH      =   1
+
 INTRO_MSG   =   ("{0}ScreamingMantis: {1}Prints info about trading " +
                  "pairs through exchange API{2}").format(WHT, YEL, CLR)
 
