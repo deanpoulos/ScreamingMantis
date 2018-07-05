@@ -14,16 +14,16 @@ from time               import sleep                # to loop program update 1m
 
 binance    =    { 'client':   bin(keys.APIKey, keys.SecretKey),
                     'name':   ORG + "[Binance]" + CLR,
-                    'pair':   "NEOETH"                           }
+                    'pair':   "XRPETH"                           }
 kucoin     =    { 'client':   kuc(keys.APIKey, keys.SecretKey),
                     'name':   BLU + "[KuCoin]" + CLR,
-                    'pair':   "NEO-ETH"                          }
+                    'pair':   "XRP-ETH"                          }
 btcmarkets =    { 'client':   btc(keys.APIKey, keys.SecretKey),
                     'name':   LIM + "[BTC Markets]" + CLR,
-                    'pair':   "ETH/BTC"                          } 
+                    'pair':   "XRP/AUD"                          } 
 bitfinex   =    { 'client':   bit(),
                     'name':   TEL + "[Bitfinex]" + CLR,
-                    'pair':   "ethbtc"                           }
+                    'pair':   "xrpeth"                           }
 
 exchanges  =    [binance, kucoin, btcmarkets, bitfinex]
 
@@ -36,8 +36,9 @@ print((EXCHANGES + " ".join([exchange["name"] for exchange in exchanges])+'\n'))
 print("") # print new line implicitly
 
 choice      = input(("Select exchange combination:\n\n   1) {0} & {1}" + \
-                     "\n   2) {2} & {3}\n\n(1/2): ").format(kucoin["name"],
-                        binance["name"], btcmarkets["name"], bitfinex["name"]))
+                     "\n   2) {2} & {3}\n   3) {4} & {5}\n\n(1/2/3): ").format(kucoin["name"],
+                        binance["name"], btcmarkets["name"], bitfinex["name"],
+                        btcmarkets["name"], binance["name"]))
 
 print("") # print new line implicitly
 
@@ -48,7 +49,7 @@ if choice == "1":
     minutes     = int(input("Age of price history (min): ")); print("") 
     start_str   = str(minutes) + "min ago UTC"
     # initialise exchange information
-    exchanges = [binance, kucoin]
+    exchanges = [kucoin, binance]
     exchanges = initialiseKuCoinBinance(exchanges, minutes, start_str)
     # print contextual information
     printTickInfoKuCoinBinance(exchanges); print("") 
@@ -62,6 +63,13 @@ elif choice == "2":
     # print contextual information
     printTickInfoBTCMarketsBitfinex(exchanges); print("")
     # calculate profitablity and print to file
-    profitabilityBTCMarketsBitfinex(exchanges); print("")
+ 
+elif choice == "3":
+    # initialise exchange information
+    exchanges = [btcmarkets, binance]
+    exchanges = initialiseBTCMarketsBinance(exchanges)
+    # print contextual information
+    printTickInfoBTCMarketsBinance(exchanges)
+
 else:
     exit()

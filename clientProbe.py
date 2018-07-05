@@ -153,7 +153,7 @@ def initialiseBTCMarketsBitfinex(exchanges):
 
 def printTickInfoBTCMarketsBitfinex(exchanges):
     """
-        print most recent price information for BTCMarkets & Binance
+        print most recent price information for BTCMarkets & Bitfinex
     """
 
     for exchange in exchanges:
@@ -217,3 +217,70 @@ def profitabilityBTCMarketsBitfinex(exchanges):
 
         # wait until data has changed
         time.sleep(3)
+        
+# BTCMarkets & Binance ========================================================#
+
+def initialiseBTCMarketsBinance(exchanges):
+    """
+        initialises the dynamic data for exchanges Binance and BTCMarkets such as
+        price action and trading status
+    """
+
+    # find status (active or inactive) and price data for two exchanges
+    for exchange in exchanges:
+        # account for some differences in API client
+        if exchange == exchanges[BINANCE]:
+            # get price history
+            exchange["price"] = exchange["client"].get_order_book(symbol=exchange["pair"])            
+            # create pseudo timestamp
+            exchange["price"]["timestamp"] = int(time.time())
+
+            # get status info
+            exchange["status"] = \
+            exchange["client"].get_symbol_info(exchange["pair"])["status"]
+            exchange["status"] = \
+            (int(not (exchange["status"].find("TRADING") == -1)) * ACTIVE) \
+               + (int(exchange["status"].find("TRADING") == -1)  * INACTIVE)
+
+        elif exchange == exchanges[BTCMARKETS]:
+            # get medium for ask price
+            url = exchange["client"].base_url + "/market/" + \
+                  exchange["pair"] + "/orderbook"
+
+            exchange["price"] = requests.get(url, verify=True).json()
+
+            # get status
+            exchange["status"] = int(exchange["price"] == {})     * INACTIVE + \
+                                 int(not exchange["price"] == {}) * ACTIVE 
+
+    return exchanges
+
+
+
+def printTickInfoBTCMarketsBinance(exchanges):
+    """
+        print most recent price information for BTCMarkets & Binance
+    """
+
+    for exchange in exchanges:
+        # print name, exchange and status
+        print("{0}Trading Pair: {1} {2}{3} {4}".format(WHT, exchange["name"], 
+            CLR, exchange["pair"], exchange["status"]))
+
+        # convert timestamp to readable string
+        exchange["price"]["timestamp"] = datetime.datetime.fromtimestamp(
+                exchange["price"]["timestamp"]).strftime("%H:%M:%S")
+
+        # print bid price compared with asking price
+        if exchange == exchanges[BINANCE]:
+            print("{0} • Ask Price:  {1}".format(WHT, CLR), end = '')
+            print("{0}{1} {2}{3}".format(
+                                             CLR, exchange["price"]["bids"][0][0],
+                                             RED, exchange["price"]["timestamp"]))
+            
+        if exchange == exchanges[BTCMARKETS]:
+            print("{0} • Ask Price:  {1}".format(WHT, CLR), end = '')
+            print("{0}{1:.6f} {2}{3}".format(
+                                             CLR,
+                                             exchange["price"]["asks"][0][0],
+                                             RED, exchange["price"]["timestamp"]))
