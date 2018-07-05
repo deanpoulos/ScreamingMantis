@@ -11,8 +11,8 @@ LIM = '\033[00;38;5;190m'
 TEL = '\033[00;38;5;30m'
 UND = '\033[4m'
 
-BINANCE     =   0
-KUCOIN      =   1
+KUCOIN      =   0
+BINANCE     =   1
 BTCMARKETS  =   2 % 2
 BITFINEX    =   3 % 2
 
