@@ -20,7 +20,7 @@ kucoin     =    { 'client':   kuc(keys.APIKey, keys.SecretKey),
                     'pair':   "XRP-ETH"                          }
 btcmarkets =    { 'client':   btc(keys.APIKey, keys.SecretKey),
                     'name':   LIM + "[BTC Markets]" + CLR,
-                    'pair':   "XRP/AUD"                          }
+                    'pair':   "ETH/AUD"                          }
 bitfinex   =    { 'client':   bit(),
                     'name':   TEL + "[Bitfinex]" + CLR,
                     'pair':   "xrpeth"                           }

@@ -293,12 +293,13 @@ def profitabilityBTCMarketsBinance(exchanges):
     """
 
     # some constants for price comparison
-    initial = float(input("Enter initial amount: "))
+    print(""); initial = float(input(WHT + "Enter initial investment: " + CLR));
+    print("")
 
     BTCmarketsTradingFee = 0.9915
     BinanceTradingFee = 0.999
-    XRPTransferFee = 0.15
-    ETHTransferFee = 0.01
+    XRPTransferFee = 0.25
+    ETHTransferFee = 0.001
 
     # relative file name
     filename = 'logs/' + time.strftime("%Y-%m-%d")
@@ -309,15 +310,19 @@ def profitabilityBTCMarketsBinance(exchanges):
 
         # reinitialise info to keep it current
         exchanges = initialiseBTCMarketsBinance(exchanges)
-        XRPprice = float(exchanges[BTCMARKETS]["price"]["asks"][0][0])
-        XRPETHprice = float(exchanges[BINANCE]["price"]["bids"][0][0]) 
-        ETHprice = float(requests.get("https://api.btcmarkets.net/market/ETH/AUD/orderbook", 
+        ETHprice = float(exchanges[BTCMARKETS]["price"]["asks"][0][0])
+        XRPETHprice = 1/float(exchanges[BINANCE]["price"]["bids"][0][0]) 
+        XRPprice = float(requests.get("https://api.btcmarkets.net/market/XRP/AUD/orderbook", 
                                       verify=True).json()["bids"][0][0])
 
         # calculate percentage 'p' with fees
-        AmountXRP = ((initial*BTCmarketsTradingFee)/XRPprice)-XRPTransferFee
-        EthAmount = (AmountXRP*XRPETHprice*BinanceTradingFee)-ETHTransferFee
-        final = EthAmount*ETHprice*BTCmarketsTradingFee
+        # amount of ETH you have in your binance account (after buying from BTCmarkets)
+        AmountETH = ((initial*BTCmarketsTradingFee)/ETHprice)-ETHTransferFee
+        # amount of XRP you have in your BTCmarkets account (after selling ETH for XRP)
+        # for the XRP/ETH price on binance we want 'asks' since we are 'buying' XRP
+        XRPAmount = (AmountETH*XRPETHprice*BinanceTradingFee)-XRPTransferFee
+        # final amount in AUD$
+        final = XRPAmount*XRPprice*BTCmarketsTradingFee 
 
         p = (final/initial)*100
 
